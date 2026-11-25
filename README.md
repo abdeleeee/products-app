@@ -1,88 +1,59 @@
-# Activité Pratique N°2 : ORM, JPA, Hibernate et Spring Data
+Activité Pratique N°2 : ORM, JPA, Hibernate et Spring Data
+Compte rendu de l'activité pratique portant sur la mise en œuvre de la couche de persistance d'une application Java EE avec Spring Boot, Spring Data JPA, Hibernate et une base de données relationnelle en mémoire H2.
 
-Compte rendu de l'activité pratique portant sur la mise en œuvre de la couche de persistance d'une application Java EE avec **Spring Boot**, **Spring Data JPA**, **Hibernate** et une base de données relationnelle en mémoire **H2**.
+Étudiant : EL AZZOUZI ABDELMOGHIT
+Établissement : Université Mundiapolis — Cycle Ingénieur Informatique
+Module : Architecture JEE & Systèmes Distribués
 
-**Étudiant :** Oussama Boustane  
-**Établissement :** Université Mundiapolis — Cycle Ingénieur Informatique  
-**Module :** Architecture JEE & Systèmes Distribués  
-**Dépôt GitHub :** oboussamaboustane-eng/productapp
+Table des matières
+Objectifs de l'activité
+Architecture et concepts clés
+Stack technique
+Structure du projet
+Étapes d'implémentation
+Résultats d'exécution
+Installation et exécution
+Objectifs de l'activité
+Initialiser un projet Spring Boot via Spring Initializr sous IntelliJ IDEA.
+Comprendre le mapping Objet-Relationnel (ORM) à travers la spécification JPA et son implémentation Hibernate.
+Configurer une base de données H2 et activer sa console d'administration web.
+Exploiter Spring Data JPA (JpaRepository) pour automatiser les opérations CRUD et créer des méthodes de recherche personnalisées.
+Valider l'ensemble des traitements (ajout, consultation, recherche, mise à jour et suppression) au démarrage de l'application.
+Architecture et concepts clés
+L'application repose sur une architecture en couches assurant un couplage faible :
 
----
-
-# Table des matières
-
-1. Objectifs de l'activité  
-2. Architecture et concepts clés  
-3. Stack technique  
-4. Structure du projet  
-5. Étapes d'implémentation  
-6. Résultats d'exécution  
-7. Installation et exécution
-
----
-
-# Objectifs de l'activité
-
-- Initialiser un projet Spring Boot via **Spring Initializr** sous IntelliJ IDEA.
-- Comprendre le mapping Objet-Relationnel (**ORM**) à travers la spécification **JPA** et son implémentation **Hibernate**.
-- Configurer une base de données **H2** et activer sa console d'administration web.
-- Exploiter **Spring Data JPA** (`JpaRepository`) pour automatiser les opérations CRUD et créer des méthodes de recherche personnalisées.
-- Valider l'ensemble des traitements (ajout, consultation, recherche, mise à jour et suppression) au démarrage de l'application.
-
----
-
-# Architecture et concepts clés
-
-L'application repose sur une architecture en couches assurant un **couplage faible** :
-
-- **JPA (Java Persistence API)** : spécification standard Java définissant les annotations de mapping (`@Entity`, `@Id`, `@GeneratedValue`).
-- **Hibernate** : implémentation concrète (moteur ORM) de JPA, chargée de générer dynamiquement les requêtes SQL et de synchroniser les objets Java avec les tables relationnelles.
-- **Spring Data JPA** : couche d'abstraction au-dessus de JPA/Hibernate qui élimine le code répétitif de la couche DAO grâce à l'interface générique `JpaRepository`.
-
----
-
-# Stack technique
-
-| Technologie | Version / Détail | Rôle |
-|------------|------------------|------|
-| Java (JDK) | Java 21 | Langage de programmation |
-| Spring Boot | 3.x | Framework d'application et conteneur IoC |
-| Spring Data JPA | Hibernate ORM | Persistance des données et mapping SQL |
-| H2 Database | En mémoire (mem) | SGBD relationnel léger pour les tests |
-| Lombok | Annotations | Génération automatique du code |
-| Maven | Gestionnaire de build | Gestion des dépendances et cycle de vie |
-
----
-
-# Structure du projet
-
-```text {preview="false"}
+JPA (Java Persistence API) : spécification standard Java définissant les annotations de mapping (@Entity, @Id, @GeneratedValue).
+Hibernate : implémentation concrète de JPA chargée de générer les requêtes SQL et d'assurer la synchronisation entre les objets Java et les tables relationnelles.
+Spring Data JPA : couche d'abstraction qui simplifie l'accès aux données grâce à l'interface générique JpaRepository.
+Stack technique
+Technologie	Version / Détail	Rôle
+Java (JDK)	Java 21	Langage de programmation
+Spring Boot	3.x	Framework d'application
+Spring Data JPA	Hibernate ORM	Persistance des données
+H2 Database	En mémoire	Base de données relationnelle
+Lombok	Annotations	Génération automatique du code
+Maven	Build Tool	Gestion des dépendances
+Structure du projet
 productapp
 ├── pom.xml
 ├── README.md
 └── src
     ├── main
-    │   ├── java/net/oussama/productapp
-    │   │   ├── ProductappApplication.java
-    │   │   ├── entities
-    │   │   │   └── Product.java
-    │   │   └── repository
-    │   │       └── ProductRepository.java
+    │   ├── java
+    │   │   └── net
+    │   │       └── ayman
+    │   │           ├── ProductappApplication.java
+    │   │           ├── entities
+    │   │           │   └── Product.java
+    │   │           └── repository
+    │   │               └── ProductRepository.java
     │   └── resources
     │       └── application.properties
     └── test
-        └── java/net/oussama/productapp
-            └── ProductappApplicationTests.java
-```
-
----
-
-# Étapes d'implémentation
-
-## 5.1 Création de l'entité JPA `Product`
-
-```java {preview="false"}
-package net.oussama.productapp.entities;
+        └── java
+Étapes d'implémentation
+5.1 Création de l'entité JPA Product
+package net.ayman.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -96,6 +67,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -104,11 +76,9 @@ public class Product {
     private double price;
     private int quantity;
 }
-```
+5.2 Configuration de la persistance
+Fichier application.properties :
 
-## 5.2 Configuration de la persistance (`application.properties`)
-
-```properties {preview="false"}
 spring.application.name=productapp
 server.port=8080
 
@@ -121,14 +91,10 @@ spring.h2.console.enabled=true
 
 spring.jpa.hibernate.ddl-auto=create-drop
 spring.jpa.show-sql=true
-```
+5.3 Création du Repository
+package net.ayman.repository;
 
-## 5.3 Interface Spring Data `ProductRepository`
-
-```java {preview="false"}
-package net.oussama.productapp.repository;
-
-import net.oussama.productapp.entities.Product;
+import net.ayman.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
@@ -138,82 +104,51 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByPriceGreaterThan(double price);
 }
-```
+5.4 Validation des opérations CRUD
+Au démarrage de l'application, un CommandLineRunner permet de réaliser automatiquement plusieurs opérations :
 
-## 5.4 Tests des opérations CRUD (`CommandLineRunner`)
+Ajout de nouveaux produits.
+Affichage de tous les produits.
+Recherche par identifiant.
+Recherche personnalisée par nom.
+Recherche des produits dont le prix dépasse un seuil donné.
+Mise à jour d'un produit existant.
+Suppression d'un produit.
+Résultats d'exécution
+Les différents tests exécutés au lancement de l'application confirment le bon fonctionnement de la couche de persistance.
 
-Un bean `CommandLineRunner` exécute séquentiellement les opérations suivantes au démarrage de l'application :
+Les opérations suivantes ont été validées avec succès :
 
-- Ajout de trois produits (Ordinateur, Imprimante, Souris).
-- Consultation de tous les produits via `findAll()`.
-- Consultation d'un produit par identifiant via `findById()`.
-- Recherche multicritère via des méthodes personnalisées.
-- Mise à jour du prix et de la quantité d'un produit.
-- Suppression d'un produit via `deleteById()`.
+Création de produits.
+Consultation globale des données.
+Consultation par identifiant.
+Recherche via des méthodes personnalisées.
+Modification des données.
+Suppression d'enregistrements.
+Hibernate génère automatiquement les requêtes SQL et les affiche dans la console grâce à la propriété :
 
----
-
-# Résultats d'exécution
-
-Les tests réalisés au démarrage de l'application démontrent le bon fonctionnement des opérations CRUD.
-
-- Les produits sont correctement enregistrés dans la base H2.
-- Les opérations de lecture retournent les résultats attendus.
-- Les méthodes de recherche personnalisées fonctionnent correctement.
-- Les modifications apportées aux produits sont bien persistées.
-- La suppression d'un produit est correctement prise en compte.
-
-Hibernate génère automatiquement les requêtes SQL nécessaires et les affiche dans la console grâce à l'option :
-
-```properties {preview="false"}
 spring.jpa.show-sql=true
-```
+L'accès à la base de données est également possible via la console H2 intégrée.
 
-La base de données peut être consultée via la console H2 :
-
-```text {preview="false"}
-http://localhost:8080/h2-console
-```
-
----
-
-# Installation et exécution
-
-## Cloner le dépôt
-
-```bash {preview="false"}
-git clone https://github.com/oboussamaboustane-eng/productapp.git
+Installation et exécution
+1. Cloner le dépôt
+git clone <url-du-depot>
 cd productapp
-```
+2. Ouvrir le projet
+Ouvrir le projet dans IntelliJ IDEA et attendre le téléchargement automatique des dépendances Maven.
 
-## Ouvrir le projet
+3. Exécuter l'application
+Lancer la classe principale :
 
-Ouvrir le projet dans **IntelliJ IDEA** et laisser Maven télécharger les dépendances nécessaires.
-
-## Lancer l'application
-
-Exécuter la classe :
-
-```text {preview="false"}
 ProductappApplication
-```
+4. Accéder à la console H2
+Ouvrir l'adresse suivante dans un navigateur :
 
-ou les tests :
-
-```text {preview="false"}
-ProductappApplicationTests
-```
-
-## Accéder à la console H2
-
-```text {preview="false"}
 http://localhost:8080/h2-console
-```
+Utiliser les paramètres suivants :
 
-Paramètres de connexion :
-
-```text {preview="false"}
 JDBC URL : jdbc:h2:mem:products-db
 User      : sa
-Password  : (vide)
-```
+Password  :
+Conclusion
+Cette activité a permis de découvrir les mécanismes de persistance des données avec Spring Boot, JPA et Hibernate. L'utilisation de Spring Data JPA simplifie considérablement le développement de la couche d'accès aux données grâce aux repositories et aux méthodes de requête automatiques. Les tests réalisés ont confirmé le bon fonctionnement des opérations CRUD ainsi que l'intégration avec la base de données H2.
